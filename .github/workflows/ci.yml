@@ -8,9 +8,6 @@ on:
     paths:
       - "**.nix"
       - "flake.lock"
-
-      - "pkgs/**"
-
       - ".github/workflows/ci.yml"
   pull_request:
     branches:
@@ -19,9 +16,6 @@ on:
     paths:
       - "**.nix"
       - "flake.lock"
-
-      - "pkgs/**"
-
       - ".github/workflows/ci.yml"
   workflow_dispatch:
 
@@ -65,7 +59,7 @@ jobs:
       - name: Install Cachix
         uses: cachix/cachix-action@v16
         with:
-          name: catppuccin
+          name: nix-themes
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Run tests

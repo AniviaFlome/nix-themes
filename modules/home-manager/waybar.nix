@@ -1,56 +1,59 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
+  cfg = config.themes.waybar;
+  palette = config.themes.palette;
+  accent = cfg.accent;
 
-  cfg = config.catppuccin.waybar;
-  enable = cfg.enable && config.programs.waybar.enable;
+  # Generate CSS custom properties for all palette colors
+  # All variables use the prefix --t- to avoid conflicts
+  cssVars = lib.concatStringsSep "\n" (
+    lib.mapAttrsToList (name: color: "  --t-${name}: ${color.hex};") (
+      lib.filterAttrs (n: _: n != "ansi" && n != "meta") palette
+    )
+  );
 
-  styleFile = "${sources.waybar}/${cfg.flavor}.css";
+  themeCSS = ''
+    /** nix-themes: ${config.themes.theme}/${config.themes.variant} **/
+    * {
+    ${cssVars}
+      --t-accent: var(--t-${accent});
+    }
+  '';
 in
 
 {
-  options.catppuccin.waybar =
-    catppuccinLib.mkCatppuccinOption {
+  options.themes.waybar =
+    themesLib.mkThemeOption {
       name = "waybar";
       accentSupport = true;
     }
     // {
       mode = lib.mkOption {
         type = lib.types.enum [
-          "prependImport"
-          "createLink"
+          "prependStyle"
+          "createFile"
         ];
-        default = "prependImport";
+        default = "prependStyle";
         description = ''
-          Defines how to include the catppuccin theme css file:
+          How to include the theme CSS:
 
-          - `prependImport`: Prepends the import statement, if `programs.waybar.style` is a string (with default override priority).
-          - `createLink`: Creates a symbolic link `~/.config/waybar/catppuccin.css`, which needs to be included in the waybar stylesheet.
+          - `prependStyle`: Prepends CSS variables to `programs.waybar.style`.
+          - `createFile`: Writes variables to `~/.config/waybar/nix-themes.css`,
+            which you can `@import` in your own stylesheet.
         '';
       };
     };
 
-  config = lib.mkIf enable (
-    lib.mkMerge [
-      (lib.mkIf (cfg.mode == "prependImport") {
-        programs.waybar = {
-          style = lib.mkBefore ''
-            @import "${styleFile}";
-            @define-color accent @${cfg.accent};
-          '';
-        };
-      })
+  config = lib.mkIf (cfg.enable && config.programs.waybar.enable) {
 
-      (lib.mkIf (cfg.mode == "createLink") {
-        xdg.configFile = {
-          "waybar/catppuccin.css".text = ''
-            ${builtins.readFile styleFile}
-            @define-color accent @${cfg.accent};
-          '';
-        };
-      })
-    ]
-  );
+    programs.waybar = lib.mkIf (cfg.mode == "prependStyle") {
+      style = lib.mkBefore themeCSS;
+    };
+
+    xdg.configFile = lib.mkIf (cfg.mode == "createFile") {
+      "waybar/nix-themes.css".text = themeCSS;
+    };
+  };
 }

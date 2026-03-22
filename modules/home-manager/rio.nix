@@ -1,18 +1,45 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
+  cfg = config.themes.rio;
+  p = config.themes.palette;
+  ansi = p.ansi;
 
-  cfg = config.catppuccin.rio;
+  # Rio expects colors as arrays [r, g, b] (0-255 integers)
+  rgb = color: [
+    color.rgb.r
+    color.rgb.g
+    color.rgb.b
+  ];
 in
 
 {
-  options.catppuccin.rio = catppuccinLib.mkCatppuccinOption { name = "rio"; };
+  options.themes.rio = themesLib.mkThemeOption { name = "rio"; };
 
   config = lib.mkIf cfg.enable {
-    programs.rio = {
-      settings = lib.importTOML "${sources.rio}/catppuccin-${cfg.flavor}.toml";
+
+    programs.rio.settings.colors = {
+      background = rgb p.base;
+      foreground = rgb p.text;
+      cursor = rgb p.rosewater;
+      # Named colors
+      black = rgb ansi.black.normal;
+      red = rgb ansi.red.normal;
+      green = rgb ansi.green.normal;
+      yellow = rgb ansi.yellow.normal;
+      blue = rgb ansi.blue.normal;
+      magenta = rgb ansi.magenta.normal;
+      cyan = rgb ansi.cyan.normal;
+      white = rgb ansi.white.normal;
+      light-black = rgb ansi.black.bright;
+      light-red = rgb ansi.red.bright;
+      light-green = rgb ansi.green.bright;
+      light-yellow = rgb ansi.yellow.bright;
+      light-blue = rgb ansi.blue.bright;
+      light-magenta = rgb ansi.magenta.bright;
+      light-cyan = rgb ansi.cyan.bright;
+      light-white = rgb ansi.white.bright;
     };
   };
 }

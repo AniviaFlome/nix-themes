@@ -6,64 +6,37 @@ in
 
 {
   xdg.enable = true;
+  xfconf.enable = isLinux;
 
-  i18n.inputMethod = {
-    enable = isLinux;
-    type = "fcitx5";
+  themes = {
+    enable = true;
+    theme = "catppuccin";
+    variant = "mocha";
+    accent = "blue";
   };
-
-  catppuccin = {
-    # NOTE: This is enabled by default already, but still
-    # listing explicitly so we know it's tested
-    glamour.enable = true;
-
-    xfce4-terminal.enable = isLinux;
-
-    # we install the themes but don't apply them so we can test kvantum, qt5ct
-    # and qt6ct
-    kvantum.assertStyle = false;
-    qt5ct = {
-      enable = true;
-      assertPlatformTheme = false;
-    };
-  };
-
-  # For `catppuccin.gtk.icon`
-  gtk.enable = isLinux;
 
   programs = {
     # keep-sorted start block=yes sticky_comments=yes
     aerc.enable = true;
     alacritty.enable = true;
-    anki.enable = true;
+    atuin.enable = true;
     bat.enable = true;
     bottom.enable = true;
-    brave.enable = true;
     broot.enable = true;
     btop.enable = true;
-    cava.enable = true;
-    chromium.enable = isLinux;
+    cava.enable = isLinux;
     delta = {
       enable = true;
       enableGitIntegration = true;
     };
     element-desktop.enable = true;
     eza.enable = true;
-    firefox = {
-      enable = true;
-      profiles.pepperjack = {
-        extensions.force = true;
-      };
-    };
     fish.enable = true;
     foot.enable = isLinux;
-    freetube.enable = isLinux;
     fuzzel.enable = isLinux;
     fzf.enable = true;
-    gemini-cli.enable = true;
     gh-dash.enable = true;
     ghostty.enable = isLinux;
-    git.enable = true;
     gitui.enable = true;
     halloy.enable = true;
     helix.enable = true;
@@ -76,10 +49,8 @@ in
     mangohud.enable = isLinux;
     micro.enable = true;
     mpv.enable = true;
-    neovim.enable = true;
     newsboat.enable = true;
-    obs-studio.enable = isLinux;
-    opencode.enable = true;
+    nushell.enable = true;
     qutebrowser.enable = false; # broken package due to python3.13-lxml-html-clean-0.4.2
     rio.enable = true;
     rofi.enable = isLinux;
@@ -89,19 +60,8 @@ in
     starship.enable = true;
     swaylock.enable = isLinux;
     television.enable = true;
-    thunderbird = {
-      enable = isLinux;
-      profiles.catppuccin-mocha-mauve.isDefault = true;
-    };
     tmux.enable = true;
     tofi.enable = isLinux;
-    vesktop.enable = true;
-    vicinae.enable = isLinux;
-    vivid.enable = true;
-    vscode = {
-      enable = true;
-      package = pkgs.vscodium;
-    };
     waybar.enable = isLinux;
     wezterm.enable = true;
     wleave.enable = isLinux;
@@ -109,15 +69,12 @@ in
     yazi.enable = true;
     zathura.enable = true;
     zed-editor.enable = true;
-    zellij.enable = true;
     zsh = {
       enable = true;
       syntaxHighlighting.enable = true;
     };
     # keep-sorted end
   };
-
-  qt.enable = isLinux;
 
   services = {
     # keep-sorted start block=yes

@@ -1,39 +1,36 @@
-{ catppuccinLib }:
-{
-  config,
-  lib,
-  ...
-}:
+{ themesLib }:
+{ config, lib, ... }:
 
 let
-  cfg = config.catppuccin.tmux;
+  cfg = config.themes.tmux;
+  p = config.themes.palette;
+  accent = cfg.accent;
+  accentColor = p.${accent}.hex;
 in
 
 {
-  options.catppuccin.tmux = catppuccinLib.mkCatppuccinOption { name = "tmux"; } // {
-    extraConfig = lib.mkOption {
-      type = lib.types.lines;
-      description = "Additional configuration for the catppuccin plugin.";
-      default = "";
-      example = ''
-        set -g @catppuccin_status_modules_right "application session user host date_time"
-      '';
-    };
+  options.themes.tmux = themesLib.mkThemeOption {
+    name = "tmux";
+    accentSupport = true;
   };
 
   config = lib.mkIf cfg.enable {
-    programs.tmux = {
-      plugins = [
-        {
-          plugin = config.catppuccin.sources.tmux;
-          extraConfig = lib.concatStrings [
-            ''
-              set -g @catppuccin_flavor '${cfg.flavor}'
-            ''
-            cfg.extraConfig
-          ];
-        }
-      ];
-    };
+
+    programs.tmux.extraConfig = ''
+      # nix-themes: ${config.themes.theme}/${config.themes.variant}
+      set -g status-style "bg=${p.base.hex},fg=${p.text.hex}"
+      set -g status-left-style "bg=${p.base.hex},fg=${p.text.hex}"
+      set -g status-right-style "bg=${p.base.hex},fg=${p.text.hex}"
+      set -g pane-border-style "fg=${p.surface1.hex}"
+      set -g pane-active-border-style "fg=${accentColor}"
+      set -g message-style "bg=${p.surface0.hex},fg=${p.text.hex}"
+      set -g message-command-style "bg=${p.surface0.hex},fg=${p.blue.hex}"
+      set -g popup-border-style "fg=${accentColor}"
+      setw -g window-status-style "bg=${p.base.hex},fg=${p.subtext0.hex}"
+      setw -g window-status-current-style "bg=${p.surface0.hex},fg=${accentColor},bold"
+      setw -g window-status-bell-style "bg=${p.red.hex},fg=${p.base.hex}"
+      set -g mode-style "bg=${p.surface1.hex},fg=${p.text.hex}"
+      set -g copy-mode-mark-style "bg=${p.surface2.hex},fg=${p.text.hex}"
+    '';
   };
 }

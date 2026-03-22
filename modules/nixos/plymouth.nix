@@ -1,21 +1,28 @@
-{ catppuccinLib }:
+{ themesLib }:
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
 let
-  cfg = config.catppuccin.plymouth;
+  cfg = config.themes.plymouth;
 in
 
 {
-  options.catppuccin.plymouth = catppuccinLib.mkCatppuccinOption { name = "plymouth"; };
+  options.themes.plymouth = themesLib.mkThemeOption { name = "plymouth"; };
 
   config = lib.mkIf cfg.enable {
+
     boot.plymouth = {
-      theme = "catppuccin-${cfg.flavor}";
-      themePackages = [ config.catppuccin.sources.plymouth ];
+      theme = "nix-themes-${config.themes.theme}-${config.themes.variant}";
+      themePackages = [
+        (pkgs.callPackage ../../pkgs/plymouth/package.nix {
+          inherit (config.themes) theme variant;
+          palette = config.themes.palette;
+        })
+      ];
     };
   };
 }

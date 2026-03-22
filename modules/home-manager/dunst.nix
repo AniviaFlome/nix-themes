@@ -1,31 +1,42 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
-
-  cfg = config.catppuccin.dunst;
+  cfg = config.themes.dunst;
+  p = config.themes.palette;
   enable = cfg.enable && config.services.dunst.enable;
+
+  # Generate a dunst drop-in file with urgency color settings
+  # Written as a drop-in so users can override with higher-precedence files
+  dropIn = ''
+    [urgency_low]
+    background = "${p.base.hex}"
+    foreground = "${p.subtext1.hex}"
+    frame_color = "${p.surface1.hex}"
+
+    [urgency_normal]
+    background = "${p.base.hex}"
+    foreground = "${p.text.hex}"
+    frame_color = "${p.blue.hex}"
+
+    [urgency_critical]
+    background = "${p.base.hex}"
+    foreground = "${p.text.hex}"
+    frame_color = "${p.red.hex}"
+  '';
 in
 
 {
-  options.catppuccin.dunst = catppuccinLib.mkCatppuccinOption { name = "dunst"; } // {
+  options.themes.dunst = themesLib.mkThemeOption { name = "dunst"; } // {
     prefix = lib.mkOption {
       type = lib.types.str;
       default = "00";
-      description = "Prefix to use for the dunst drop-in file";
+      description = "Prefix for the dunst drop-in file (controls load order)";
     };
   };
 
-  # Dunst currently has no "include" functionality, but has "drop-ins"
-  # Unfortunately, this may cause inconvenience as it overrides ~/.config/dunst/dunstrc
-  # but it can be overridden by another drop-in.
   config = lib.mkIf enable {
-    xdg.configFile = {
-      # Using a prefix like this is necessary because drop-ins' precedence depends on lexical order
-      # such that later drop-ins override earlier ones
-      # This way, users have better control over precedence
-      "dunst/dunstrc.d/${cfg.prefix}-catppuccin.conf".source = sources.dunst + "/${cfg.flavor}.conf";
-    };
+
+    xdg.configFile."dunst/dunstrc.d/${cfg.prefix}-nix-themes.conf".text = dropIn;
   };
 }

@@ -35,14 +35,6 @@ jobs:
         run: |
           nix fmt
 
-      - name: Install Node modules
-        run: |
-          nix develop --command pnpm install
-
-      - name: Format with Prettier
-        run: |
-          nix develop --command nrr fmt
-
       - name: Commit changes
         run: |
           if ! git diff --color=always --exit-code; then

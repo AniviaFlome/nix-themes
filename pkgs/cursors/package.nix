@@ -1,101 +1,35 @@
+# TODO: Generate an X11/Hyprcursor cursor theme from palette data.
+#
+# The upstream catppuccin/cursors package has the most complex build pipeline:
+#   - whiskers (Catppuccin Tera template engine) renders SVG templates
+#   - inkscape renders SVGs → PNGs at each cursor size
+#   - xcursorgen assembles PNGs + cursor hotspot config → .xcursor files
+#   - hyprcursor assembles into Hyprland cursor format
+#   - python3 + PySide6 for additional processing
+#
+# A universal implementation would need to:
+#   (a) Maintain SVG cursor templates with color variables (not catppuccin-specific)
+#   (b) Substitute palette hex values into the SVG templates at build time
+#   (c) Run the same inkscape → xcursorgen pipeline
+#
+# This requires either:
+#   - Maintaining a full set of SVG cursor templates in this repo, OR
+#   - Using the upstream templates with a color-variable substitution step
+#
+# Upstream reference: github.com/catppuccin/cursors
+# Upstream package: pkgs/cursors/package.nix (builds 64 flavor×accent variants)
+
 {
   lib,
-  buildCatppuccinPort,
-  hyprcursor,
-  inkscape,
-  just,
-  python3,
-  whiskers,
-  xcur2png,
-  xcursorgen,
-  zip,
+  palette,
+  theme,
+  variant,
+  accent ? "blue",
+  ...
 }:
-let
-  dimensions = {
-    flavor = [
-      "frappe"
-      "latte"
-      "macchiato"
-      "mocha"
-    ];
-    accent = [
-      "Blue"
-      "Dark"
-      "Flamingo"
-      "Green"
-      "Lavender"
-      "Light"
-      "Maroon"
-      "Mauve"
-      "Peach"
-      "Pink"
-      "Red"
-      "Rosewater"
-      "Sapphire"
-      "Sky"
-      "Teal"
-      "Yellow"
-    ];
-  };
 
-  variantName = { flavor, accent }: flavor + accent;
-  variants = lib.mapCartesianProduct variantName dimensions;
-in
-buildCatppuccinPort (finalAttrs: {
-  port = "cursors";
-
-  postPatch = "patchShebangs scripts/ build";
-
-  # dummy "out" output to prevent breakage
-  outputs = variants ++ [ "out" ];
-  outputsToInstall = [ ];
-
-  nativeBuildInputs = [
-    (python3.withPackages (p: [ p.pyside6 ]))
-    hyprcursor
-    inkscape
-    just
-    whiskers
-    xcur2png
-    xcursorgen
-    zip
-  ];
-
-  buildPhase = ''
-    runHook preBuild
-
-    just all
-
-    runHook postBuild
-  '';
-
-  installPhase = ''
-    runHook preInstall
-
-    for output in $(getAllOutputNames); do
-      if [ "$output" != "out" ]; then
-        local outputDir="''${!output}"
-        local iconsDir="$outputDir"/share/icons
-
-        mkdir -p "$iconsDir"
-
-        # Convert to kebab case with the first letter of each word capitalized
-        local variant=$(sed 's/\([A-Z]\)/-\1/g' <<< "$output")
-        local variant=''${variant,,}
-
-        mv "dist/catppuccin-$variant-cursors" "$iconsDir"
-      fi
-    done
-
-    # Needed to prevent breakage
-    mkdir -p "$out"
-
-    runHook postInstall
-  '';
-
-  meta = {
-    description = "Catppuccin cursor theme based on Volantes";
-    license = lib.licenses.gpl2;
-    platforms = lib.platforms.linux;
-  };
-})
+throw ''
+  themes.pkgs.cursors: not yet implemented.
+  TODO: Generate cursor theme assets from palette data (${theme}/${variant}/${accent}).
+  See themes/pkgs/cursors/package.nix for implementation guidance.
+''

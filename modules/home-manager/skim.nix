@@ -1,21 +1,23 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
-
-  cfg = config.catppuccin.skim;
-  palette = (lib.importJSON "${sources.palette}/palette.json").${cfg.flavor}.colors;
+  cfg = config.themes.skim;
+  p = config.themes.palette;
+  accent = cfg.accent;
+  accentColor = p.${accent}.hex;
 in
 
 {
-  options.catppuccin.skim = catppuccinLib.mkCatppuccinOption { name = "skim"; };
+  options.themes.skim = themesLib.mkThemeOption {
+    name = "skim";
+    accentSupport = true;
+  };
 
   config = lib.mkIf cfg.enable {
-    programs.skim = {
-      defaultOptions = [
-        "--color=fg:${palette.text.hex},bg:${palette.base.hex},matched:${palette.surface0.hex},matched_bg:${palette.flamingo.hex},current:${palette.text.hex},current_bg:${palette.surface1.hex},current_match:${palette.base.hex},current_match_bg:${palette.rosewater.hex},spinner:${palette.green.hex},info:${palette.mauve.hex},prompt:${palette.blue.hex},cursor:${palette.red.hex},selected:${palette.maroon.hex},header:${palette.teal.hex},border:${palette.overlay0.hex}"
-      ];
-    };
+
+    programs.skim.defaultOptions = [
+      "--color=fg:${p.text.hex},bg:${p.base.hex},matched:${p.surface0.hex},matched_bg:${p.flamingo.hex},current:${p.text.hex},current_bg:${p.surface1.hex},current_match:${p.base.hex},current_match_bg:${p.rosewater.hex},spinner:${p.green.hex},info:${p.mauve.hex},prompt:${accentColor},cursor:${p.red.hex},selected:${p.maroon.hex},header:${p.teal.hex},border:${p.overlay0.hex}"
+    ];
   };
 }

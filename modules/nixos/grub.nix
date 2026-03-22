@@ -1,27 +1,32 @@
-{ catppuccinLib }:
+{ themesLib }:
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
 let
-  inherit (config.catppuccin) sources;
+  cfg = config.themes.grub;
+  palette = config.themes.palette;
 
-  cfg = config.catppuccin.grub;
+  theme = pkgs.callPackage ../../pkgs/grub/package.nix {
+    inherit palette;
+    inherit (config.themes) theme variant;
+  };
 
-  # TODO @getchoo: upstream this in nixpkgs maybe? idk if they have grub themes
-  theme = sources.grub + "/share/grub/themes/catppuccin-${cfg.flavor}-grub-theme";
+  themePath = "${theme}/share/grub/themes/nix-themes-${config.themes.theme}-${config.themes.variant}";
 in
 
 {
-  options.catppuccin.grub = catppuccinLib.mkCatppuccinOption { name = "grub"; };
+  options.themes.grub = themesLib.mkThemeOption { name = "grub"; };
 
   config = lib.mkIf cfg.enable {
+
     boot.loader.grub = {
-      font = "${theme}/font.pf2";
-      splashImage = "${theme}/background.png";
-      inherit theme;
+      font = "${themePath}/font.pf2";
+      splashImage = "${themePath}/background.png";
+      theme = themePath;
     };
   };
 }

@@ -14,7 +14,7 @@ jobs:
   backport:
     name: Backport Pull Request
 
-    if: ${{ github.repository_owner == 'catppuccin' && github.event.pull_request.merged == true && (github.event_name != 'labeled' || startsWith('backport', github.event.label.name)) }}
+    if: ${{ github.repository_owner == 'aniviaflome' && github.event.pull_request.merged == true && (github.event_name != 'labeled' || startsWith('backport', github.event.label.name)) }}
 
     runs-on: ubuntu-latest
 

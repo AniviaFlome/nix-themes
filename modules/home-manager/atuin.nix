@@ -1,26 +1,37 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
-  cfg = config.catppuccin.atuin;
+  cfg = config.themes.atuin;
+  p = config.themes.palette;
+  accent = cfg.accent;
+  themeName = "nix-themes-${config.themes.theme}-${config.themes.variant}-${accent}";
   enable = cfg.enable && config.programs.atuin.enable;
-  themeName = "catppuccin-${cfg.flavor}-${cfg.accent}";
 in
 
 {
-  options.catppuccin.atuin = catppuccinLib.mkCatppuccinOption {
+  options.themes.atuin = themesLib.mkThemeOption {
     name = "atuin";
     accentSupport = true;
   };
 
   config = lib.mkIf enable {
-    programs.atuin = {
-      settings.theme.name = themeName;
-    };
 
-    xdg.configFile = {
-      "atuin/themes/${themeName}.toml".source = "${sources.atuin}/${cfg.flavor}/${themeName}.toml";
-    };
+    programs.atuin.settings.theme.name = themeName;
+
+    xdg.configFile."atuin/themes/${themeName}.toml".text = ''
+      [theme]
+      name = "${themeName}"
+
+      [colors]
+      AlertInfo = "${p.green.hex}"
+      AlertWarn = "${p.peach.hex}"
+      AlertError = "${p.red.hex}"
+      Annotation = "${p.${accent}.hex}"
+      Base = "${p.text.hex}"
+      Guidance = "${p.overlay1.hex}"
+      Important = "${p.red.hex}"
+      Title = "${p.${accent}.hex}"
+    '';
   };
 }

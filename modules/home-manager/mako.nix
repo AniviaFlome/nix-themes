@@ -1,25 +1,26 @@
-{ catppuccinLib }:
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ themesLib }:
+{ config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
-
-  cfg = config.catppuccin.mako;
+  cfg = config.themes.mako;
+  p = config.themes.palette;
+  accent = cfg.accent;
+  accentColor = p.${accent}.hex;
 in
 
 {
-  options.catppuccin.mako = catppuccinLib.mkCatppuccinOption {
+  options.themes.mako = themesLib.mkThemeOption {
     name = "mako";
     accentSupport = true;
   };
 
-  config.services.mako = lib.mkIf cfg.enable ({
-    settings.include =
-      sources.mako + "/catppuccin-${cfg.flavor}/catppuccin-${cfg.flavor}-${cfg.accent}";
-  });
+  config = lib.mkIf cfg.enable {
+
+    services.mako.settings = {
+      background-color = p.base.hex;
+      text-color = p.text.hex;
+      border-color = accentColor;
+      progress-color = "over ${p.surface0.hex}";
+    };
+  };
 }

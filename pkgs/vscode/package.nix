@@ -1,72 +1,36 @@
+# TODO: Generate a VS Code extension/theme from palette data.
+#
+# The upstream catppuccin/vscode package uses pnpm + nodejs to run a JS build
+# pipeline (generateThemes.cjs) that produces VS Code theme JSON files.
+# The JS code reads catppuccin palette data and generates TextMate/VS Code
+# color theme JSON with complex token scoping rules.
+#
+# A universal implementation would need to:
+#   (a) Re-implement the theme JSON generation in Nix (doable but verbose)
+#   (b) OR write a standalone template generator that works with any palette
+#
+# The VS Code theme JSON format is documented at:
+#   https://code.visualstudio.com/api/extension-guides/color-theme
+#
+# The generated JSON maps:
+#   - Editor colors (background, foreground, cursor, selection, etc.)
+#   - Token colors (syntax highlighting scopes)
+#   - Workbench colors (sidebar, statusbar, titlebar, etc.)
+#
+# This is achievable in pure Nix but requires mapping many color slots.
+# Upstream reference: github.com/catppuccin/vscode
+
 {
   lib,
-  vscode-utils,
-  fetchCatppuccinPort,
-  nodejs,
-  pnpm,
-  pnpmConfigHook,
-  fetchPnpmDeps,
-
-  catppuccinOptions ? { },
+  palette,
+  theme,
+  variant,
+  accent ? "blue",
+  ...
 }:
 
-vscode-utils.buildVscodeExtension (finalAttrs: {
-  pname = "catppuccin-vscode";
-  name = finalAttrs.pname;
-  version = "3.18.0";
-
-  src = fetchCatppuccinPort {
-    port = "vscode";
-    rev = "refs/tags/@catppuccin/vscode-v${finalAttrs.version}";
-    hash = "sha256-vi+QNploStQFrXSc+izcycKtpkrRsq2mJWrKsHP3D5g=";
-  };
-
-  vscodeExtPublisher = "catppuccin";
-  vscodeExtName = "vscode";
-  vscodeExtUniqueId = "catppuccin.vscode";
-
-  sourceRoot = null;
-
-  pnpmWorkspaces = [ "catppuccin-vsc" ];
-  pnpmDeps = fetchPnpmDeps {
-    inherit (finalAttrs)
-      pname
-      version
-      src
-      pnpmWorkspaces
-      ;
-    fetcherVersion = 3;
-    hash = "sha256-sPJhXj13O16kcaJ8LtJaGOtFxdXBl23wmCV4hcEhz4I=";
-  };
-
-  nativeBuildInputs = [
-    nodejs
-    pnpm
-    pnpmConfigHook
-  ];
-
-  env = lib.optionalAttrs (catppuccinOptions != { }) {
-    CATPPUCCIN_OPTIONS = builtins.toJSON catppuccinOptions;
-  };
-
-  buildPhase = ''
-    runHook preBuild
-
-    pnpm --filter catppuccin-vsc core:build --no-regenerate
-
-    cd packages/catppuccin-vsc
-    node dist/hooks/generateThemes.cjs
-    touch ./themes/.flag
-
-    runHook postBuild
-  '';
-
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/$installPrefix"
-    cp -rL ../../LICENSE ../../README.md package.json icon.png dist/ themes/ "$out/$installPrefix/"
-
-    runHook postInstall
-  '';
-})
+throw ''
+  themes.pkgs.vscode: not yet implemented.
+  TODO: Generate VS Code theme JSON from palette data (${theme}/${variant}/${accent}).
+  See themes/pkgs/vscode/package.nix for implementation guidance.
+''

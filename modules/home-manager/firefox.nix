@@ -1,5 +1,11 @@
-{ catppuccinLib }:
-{ config, lib, ... }:
+{ themesLib }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
 let
   inherit (lib)
     attrNames
@@ -16,8 +22,15 @@ let
     types
     ;
 
-  inherit (config.catppuccin) sources;
-  themes = importJSON "${sources.firefox}/themes.json";
+  palette = config.themes.palette;
+
+  # Generate themes.json from palette — no external build needed
+  firefoxPkg = pkgs.callPackage ../../pkgs/firefox/package.nix {
+    inherit palette pkgs;
+    inherit (config.themes) theme variant;
+  };
+
+  themes = importJSON "${firefoxPkg}/themes.json";
 
   mkFirefoxModule =
     {
@@ -30,7 +43,7 @@ let
     }:
     let
       modulePath = [
-        "catppuccin"
+        "themes"
         name
       ];
 
@@ -44,15 +57,18 @@ let
           forceDefault ? false,
           enableDefault ? null,
         }:
-        catppuccinLib.mkCatppuccinOption (
-          {
+        let
+          baseOpts = themesLib.mkThemeOption {
             inherit name;
             accentSupport = true;
-          }
-          // (lib.optionalAttrs (enableDefault != null) {
+          };
+        in
+        baseOpts
+        // lib.optionalAttrs (enableDefault != null) {
+          enable = baseOpts.enable // {
             default = enableDefault;
-          })
-        )
+          };
+        }
         // {
           force = mkOption {
             type = types.bool;
@@ -75,18 +91,16 @@ let
                     forceDefault = cfg.force;
                   };
                   config = {
-                    flavor = lib.mkDefault cfg.flavor;
                     accent = lib.mkDefault cfg.accent;
                   };
                 }
               );
               default = mapAttrs (_: _: { }) firefoxCfg.profiles;
               defaultText = "<profiles declared in `${getAttrStringFromPath hmModulePath}.profiles`>";
-              description = "Catppuccin settings for ${prettyName} profiles.";
+              description = "themes settings for ${prettyName} profiles.";
             };
           }
         ))
-        # home-manager browser config
         // (setAttrByPath hmModulePath {
           profiles = mkOption {
             type = types.attrsOf (
@@ -94,15 +108,17 @@ let
                 { name, ... }:
                 let
                   profile = cfg.profiles.${name} or { enable = false; };
+                  # Resolve theme data: themes.json is keyed by theme→variant→accent
+                  themeData = themes.${config.themes.theme}.${config.themes.variant}.${profile.accent} or null;
                 in
                 {
-                  config = mkIf profile.enable {
+                  config = mkIf (profile.enable && themeData != null) {
                     extensions = {
                       settings."FirefoxColor@mozilla.com" = {
                         inherit (profile) force;
                         settings = {
                           firstRunDone = true;
-                          theme = themes.${profile.flavor}.${profile.accent};
+                          theme = themeData;
                         };
                       };
                     };
@@ -115,11 +131,11 @@ let
 
       config = {
         warnings = foldl' (
-          acc: name:
+          acc: profileName:
           acc
           ++
-            optional (!(hasAttr name firefoxCfg.profiles))
-              "${prettyName} profile '${name}' is defined in '${getAttrStringFromPath modulePath}', but not '${getAttrStringFromPath hmModulePath}'. This will have no effect."
+            optional (!(hasAttr profileName firefoxCfg.profiles))
+              "${prettyName} profile '${profileName}' is defined in '${getAttrStringFromPath modulePath}', but not '${getAttrStringFromPath hmModulePath}'. This will have no effect."
         ) [ ] (attrNames cfg.profiles);
       };
     };
@@ -129,7 +145,7 @@ in
     { name = "firefox"; }
     {
       name = "librewolf";
-      prettyName = "LibreWolf"; # W in LibreWolf is uppercase
+      prettyName = "LibreWolf";
     }
     { name = "floorp"; }
   ];

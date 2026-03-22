@@ -1,58 +1,37 @@
-{ catppuccinLib }:
+{ themesLib }:
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
 let
-  inherit (config.catppuccin) sources;
-
-  cfg = config.catppuccin.cursors;
-
-  # "dark" and "light" can be used alongside the regular accents
-  cursorAccentType = lib.types.mergeTypes catppuccinLib.types.accent (
-    lib.types.enum [
-      "dark"
-      "light"
-    ]
-  );
+  cfg = config.themes.cursors;
 in
 
 {
-  options.catppuccin.cursors =
-    (catppuccinLib.mkCatppuccinOption {
-      name = "pointer cursors";
-      # NOTE: We exclude this as there is no `enable` option in the upstream
-      # module to guard it
-      useGlobalEnable = false;
-    })
-    // {
-      accent = lib.mkOption {
-        type = cursorAccentType;
-        default = config.catppuccin.accent;
-        description = "Catppuccin accent for pointer cursors";
+  options.themes.cursors = themesLib.mkThemeOption {
+    name = "cursors";
+    accentSupport = true;
+  };
+
+  config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        # TODO: remove once themes/pkgs/cursors/package.nix is implemented
+        assertion = false;
+        message = "themes.cursors is not yet implemented. See themes/pkgs/cursors/package.nix.";
+      }
+    ];
+
+    home.pointerCursor = {
+      name = "nix-themes-${config.themes.theme}-${config.themes.variant}-${cfg.accent}";
+      package = pkgs.callPackage ../../pkgs/cursors/package.nix {
+        inherit (config.themes) theme variant;
+        inherit (cfg) accent;
+        palette = config.themes.palette;
       };
     };
-
-  config =
-    lib.mkIf
-      (
-        cfg.enable
-        && (config.services.desktopManager.gnome.enable || config.services.displayManager.gdm.enable)
-      )
-      {
-        environment.systemPackages = [
-          sources.cursors."${cfg.flavor}${lib.toSentenceCase cfg.accent}"
-        ];
-
-        programs.dconf.profiles.gdm.databases = [
-          {
-            lockAll = true;
-            settings."org/gnome/desktop/interface" = {
-              cursor-theme = "catppuccin-${cfg.flavor}-${cfg.accent}-cursors";
-            };
-          }
-        ];
-      };
+  };
 }

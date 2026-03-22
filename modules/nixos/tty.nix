@@ -1,38 +1,38 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
-
-  cfg = config.catppuccin.tty;
+  cfg = config.themes.tty;
+  p = config.themes.palette;
+  sh = themesLib.stripHash;
   enable = cfg.enable && config.console.enable;
-  palette = (lib.importJSON "${sources.palette}/palette.json").${cfg.flavor}.colors;
 in
 
 {
-  options.catppuccin.tty = catppuccinLib.mkCatppuccinOption { name = "tty"; };
+  options.themes.tty = themesLib.mkThemeOption { name = "tty"; };
 
   config = lib.mkIf enable {
-    # Manually populate with colors from catppuccin/tty
-    # Make sure to strip initial # from hex codes
-    console.colors = map (color: (lib.substring 1 6 palette.${color}.hex)) [
-      "base"
-      "red"
-      "green"
-      "yellow"
-      "blue"
-      "pink"
-      "teal"
-      "subtext1"
 
-      "surface2"
-      "red"
-      "green"
-      "yellow"
-      "blue"
-      "pink"
-      "teal"
-      "subtext0"
+    # console.colors expects 16 hex strings without '#'
+    # Order: 8 normal colors (black, red, green, yellow, blue, magenta, cyan, white)
+    # then 8 bright variants
+    console.colors = map sh [
+      p.ansi.black.normal
+      p.ansi.red.normal
+      p.ansi.green.normal
+      p.ansi.yellow.normal
+      p.ansi.blue.normal
+      p.ansi.magenta.normal
+      p.ansi.cyan.normal
+      p.ansi.white.normal
+      p.ansi.black.bright
+      p.ansi.red.bright
+      p.ansi.green.bright
+      p.ansi.yellow.bright
+      p.ansi.blue.bright
+      p.ansi.magenta.bright
+      p.ansi.cyan.bright
+      p.ansi.white.bright
     ];
   };
 }

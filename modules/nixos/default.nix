@@ -4,6 +4,6 @@
   _class = "nixos";
 
   imports = [
-    (lib.modules.importApply ../global.nix { catppuccinModules = import ./all-modules.nix; })
+    (lib.modules.importApply ../global.nix { themesModules = import ./all-modules.nix; })
   ];
 }

@@ -24,11 +24,6 @@ pkgs.mkShellNoCC {
         Basically: Nix is the only one that evaluates our development Flake correctly. Yay.
       */
       nixVersions.nix_2_28
-
-      # Node tooling for Astro/Starlight
-      nodejs-slim
-      corepack
-      nrr
     ]
     ++ lib.optionals (!minimal) [
       # Nix tools
@@ -36,23 +31,13 @@ pkgs.mkShellNoCC {
       nixfmt
       nil
       statix
-
       # GHA lints
       actionlint
-
-      # Python tools for paws.py
-      pyright
-      ruff
-
-      # More node tooling for Astro/Starlight
-      astro-language-server
-      typescript-language-server
-
       # Shell lints
       shellcheck
     ];
 
   shellHook = ''
-    echo "Welcome to the catppuccin/nix repository! Thanks for contributing and have a wonderful day 🐈"
+    echo "Welcome to nix-themes!"
   '';
 }

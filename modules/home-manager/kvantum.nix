@@ -1,21 +1,28 @@
-{ catppuccinLib }:
+{ themesLib }:
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
 let
-  cfg = config.catppuccin.kvantum;
+  cfg = config.themes.kvantum;
   enable = cfg.enable && config.qt.enable;
 
-  themeName = "catppuccin-${cfg.flavor}-${cfg.accent}";
+  themeName = "nix-themes-${config.themes.theme}-${config.themes.variant}-${cfg.accent}";
+
+  kvantumPkg = pkgs.callPackage ../../pkgs/kvantum/package.nix {
+    inherit (config.themes) theme variant;
+    inherit (cfg) accent;
+    palette = config.themes.palette;
+  };
 in
 
 {
-  options.catppuccin.kvantum =
-    catppuccinLib.mkCatppuccinOption {
-      name = "Kvantum";
+  options.themes.kvantum =
+    themesLib.mkThemeOption {
+      name = "kvantum";
       accentSupport = true;
     }
     // {
@@ -33,24 +40,22 @@ in
         default = true;
         example = false;
         description = ''
-          Wether to assert that {option}`qt.style.name` is set to `"kvantum"` when Kvantum themes are enabled.
+          Whether to assert that {option}`qt.style.name` is set to `"kvantum"` when Kvantum themes are enabled.
         '';
       };
     };
 
   config = lib.mkIf enable {
-    assertions = lib.mkIf cfg.assertStyle [
-      {
-        assertion = lib.elem config.qt.style.name [
-          "kvantum"
-          "Kvantum"
-        ];
-        message = ''`qt.style.name` must be `"kvantum"` to use `qt.style.catppuccin`'';
-      }
-    ];
+    assertions = lib.optional cfg.assertStyle {
+      assertion = lib.elem config.qt.style.name [
+        "kvantum"
+        "Kvantum"
+      ];
+      message = "`qt.style.name` must be `\"kvantum\"` to use `themes.kvantum`";
+    };
 
     xdg.configFile = {
-      "Kvantum/${themeName}".source = "${config.catppuccin.sources.kvantum}/share/Kvantum/${themeName}";
+      "Kvantum/${themeName}".source = "${kvantumPkg}/share/Kvantum/${themeName}";
       "Kvantum/kvantum.kvconfig" = lib.mkIf cfg.apply {
         text = ''
           [General]

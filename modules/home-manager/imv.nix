@@ -1,18 +1,22 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
-
-  cfg = config.catppuccin.imv;
+  cfg = config.themes.imv;
+  p = config.themes.palette;
 in
 
 {
-  options.catppuccin.imv = catppuccinLib.mkCatppuccinOption { name = "imv"; };
+  options.themes.imv = themesLib.mkThemeOption { name = "imv"; };
 
   config = lib.mkIf cfg.enable {
-    programs.imv = {
-      settings = catppuccinLib.importINI (sources.imv + "/${cfg.flavor}.config");
+
+    programs.imv.settings = {
+      options = {
+        background = themesLib.stripHash p.base;
+        overlay_background_color = themesLib.stripHash p.surface0;
+        overlay_text_color = themesLib.stripHash p.text;
+      };
     };
   };
 }

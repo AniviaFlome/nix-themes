@@ -1,39 +1,35 @@
-{ catppuccinLib }:
+{ themesLib }:
 { config, lib, ... }:
 
 let
-  inherit (config.catppuccin) sources;
+  cfg = config.themes.fzf;
+  palette = config.themes.palette;
+  accent = cfg.accent;
 
-  cfg = config.catppuccin.fzf;
-  palette = (lib.importJSON "${sources.palette}/palette.json").${cfg.flavor}.colors;
-
-  # Manually populate with colors from catppuccin/fzf
-  # The ordering is meant to match the order of catppuccin/fzf to make comparison easier
-  colors = lib.attrsets.mapAttrs (_: color: palette.${color}.hex) {
+  colors = lib.attrsets.mapAttrs (_: colorName: palette.${colorName}.hex) {
     "bg+" = "surface0";
     bg = "base";
     spinner = "rosewater";
-    hl = cfg.accent;
+    hl = accent;
     fg = "text";
-    header = cfg.accent;
-    info = cfg.accent;
-    pointer = cfg.accent;
-    marker = cfg.accent;
+    header = accent;
+    info = accent;
+    pointer = accent;
+    marker = accent;
     "fg+" = "text";
-    prompt = cfg.accent;
-    "hl+" = cfg.accent;
+    prompt = accent;
+    "hl+" = accent;
   };
 in
 
 {
-  options.catppuccin.fzf = catppuccinLib.mkCatppuccinOption {
+  options.themes.fzf = themesLib.mkThemeOption {
     name = "fzf";
     accentSupport = true;
   };
 
   config = lib.mkIf cfg.enable {
-    programs.fzf = {
-      inherit colors;
-    };
+
+    programs.fzf = { inherit colors; };
   };
 }

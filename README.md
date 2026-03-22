@@ -1,63 +1,58 @@
-<h3 align="center">
-	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/logos/exports/1544x1544_circle.png" width="100" alt="Logo"/><br/>
-	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
-	Catppuccin for <a href="https://nixos.org">Nix</a>
-	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="30" width="0px"/>
-</h3>
+# nix-themes
 
-<p align="center">
-	<a href="https://github.com/catppuccin/nix/stargazers"><img src="https://img.shields.io/github/stars/catppuccin/nix?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"></a>
-	<a href="https://github.com/catppuccin/nix/issues"><img src="https://img.shields.io/github/issues/catppuccin/nix?colorA=363a4f&colorB=f5a97f&style=for-the-badge"></a>
-	<a href="https://github.com/catppuccin/nix/contributors"><img src="https://img.shields.io/github/contributors/catppuccin/nix?colorA=363a4f&colorB=a6da95&style=for-the-badge"></a>
-</p>
+Vibe coded experimental fork of [catppuccin/nix]([LICENSE](https://github.com/catppuccin/nix) that supports more color palettes.
 
-<p align="center">
-	<img src="assets/previews/preview.webp"/>
-</p>
+Supports **10 color schemes** with multiple variants each:
 
-## Previews
+| Theme | Variants |
+|---|---|
+| catppuccin | latte, frappe, macchiato, mocha |
+| dracula | default, alucard |
+| everforest | dark-hard, dark-medium, dark-soft, light-hard, light-medium, light-soft |
+| gruvbox | dark-hard, dark-medium, dark-soft, light-hard, light-medium, light-soft |
+| kanagawa | wave, dragon, lotus |
+| nord | dark |
+| one-dark | dark, light |
+| rose-pine | main, moon, dawn |
+| solarized | dark, light |
+| tokyo-night | storm, night, moon, day |
 
-<details>
-  <summary>🌻 Latte</summary>
-  <img src="assets/previews/latte.webp"/>
-</details>
-<details>
-  <summary>🪴 Frappé</summary>
-  <img src="assets/previews/frappe.webp"/>
-</details>
-<details>
-  <summary>🌺 Macchiato</summary>
-  <img src="assets/previews/macchiato.webp"/>
-</details>
-<details>
-  <summary>🌿 Mocha</summary>
-  <img src="assets/previews/mocha.webp"/>
-</details>
+## Quick Start
 
-## Usage
+Add the flake input:
 
-This port is documented on our website, [nix.catppuccin.com](https://nix.catppuccin.com). There you can find:
+```nix
+inputs.nix-themes.url = "github:aniviaflome/nix-themes";
+```
 
-- Our [Getting Started](https://nix.catppuccin.com/getting-started/) guide
-- [Release changelogs](https://nix.catppuccin.com/changelog/)
-- [Frequently Asked Questions](https://nix.catppuccin.com/faq/)
-- [Options List](https://nix.catppuccin.com/options/main/nixos/catppuccin/)
+Import the module in your Home Manager or NixOS configuration:
 
-## 💝 Thanks to
+```nix
+# Home Manager
+imports = [ inputs.nix-themes.homeModules.default ];
 
-- [Stonks3141](https://github.com/Stonks3141)
-- [getchoo](https://github.com/getchoo)
+# NixOS
+imports = [ inputs.nix-themes.nixosModules.default ];
+```
 
-&nbsp;
+Enable and configure:
 
-<p align="center">
-	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" />
-</p>
+```nix
+themes = {
+  enable = true;
+  theme = "catppuccin";   # one of the 10 theme names above
+  variant = "mocha";      # a variant for the chosen theme
+  accent = "blue";        # accent color
+};
+```
 
-<p align="center">
-	Copyright &copy; 2023-present <a href="https://github.com/catppuccin" target="_blank">Catppuccin Org</a>
-</p>
+All supported apps will automatically receive consistent theming. You can also enable or disable per app:
 
-<p align="center">
-	<a href="https://github.com/catppuccin/catppuccin/blob/main/LICENSE"><img src="https://img.shields.io/static/v1.svg?style=for-the-badge&label=License&message=MIT&logoColor=d9e0ee&colorA=363a4f&colorB=b7bdf8"/></a>
-</p>
+```nix
+themes.kitty.enable = true;
+themes.waybar.enable = false;
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE)

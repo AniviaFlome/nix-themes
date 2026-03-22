@@ -1,16 +1,13 @@
+# keep-sorted start
 [
-  # keep-sorted start
   ./aerc.nix
   ./alacritty.nix
-  ./anki.nix
   ./atuin.nix
   ./bat.nix
   ./bottom.nix
   ./broot.nix
   ./btop.nix
   ./cava.nix
-  ./chrome.nix
-  ./cursors.nix
   ./delta.nix
   ./dunst.nix
   ./element-desktop.nix
@@ -19,15 +16,12 @@
   ./firefox.nix
   ./fish.nix
   ./foot.nix
-  ./freetube.nix
   ./fuzzel.nix
   ./fzf.nix
-  ./gemini-cli.nix
   ./gh-dash.nix
   ./ghostty.nix
   ./gitui.nix
   ./glamour.nix
-  ./gtk.nix
   ./halloy.nix
   ./helix.nix
   ./hyprland.nix
@@ -42,13 +36,9 @@
   ./mangohud.nix
   ./micro.nix
   ./mpv.nix
-  ./neovim.nix
   ./newsboat.nix
   ./nushell.nix
-  ./obs.nix
-  ./opencode.nix
   ./polybar.nix
-  ./qt5ct.nix
   ./qutebrowser.nix
   ./rio.nix
   ./rofi.nix
@@ -57,16 +47,11 @@
   ./spotify-player.nix
   ./starship.nix
   ./sway.nix
-  ./swaylock.nix
   ./swaync.nix
+  ./swaylock.nix
   ./television.nix
-  ./thunderbird.nix
   ./tmux.nix
   ./tofi.nix
-  ./vesktop.nix
-  ./vicinae.nix
-  ./vivid.nix
-  ./vscode.nix
   ./waybar.nix
   ./wezterm.nix
   ./wleave.nix
@@ -75,7 +60,6 @@
   ./yazi.nix
   ./zathura.nix
   ./zed-editor.nix
-  ./zellij.nix
   ./zsh-syntax-highlighting.nix
-  # keep-sorted end
 ]
+# keep-sorted end
