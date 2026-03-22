@@ -30,10 +30,19 @@ jobs:
       - name: Build search site
         run: nix build ./dev#search --no-write-lock-file
 
+      # NuschtOS/search must be built with baseHref="/" due to an Angular SSR
+      # prerender bug with non-root base hrefs. We rewrite <base href> in the
+      # deployed HTML so assets resolve correctly on GitHub Pages (/nix-themes/).
+      - name: Patch base href for GitHub Pages
+        run: |
+          cp -rL result site
+          chmod -R u+w site
+          find site -name "*.html" -exec sed -i 's|<base href="/">|<base href="/nix-themes/">|g' {} +
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: result/
+          path: site/
 
   deploy:
     name: Deploy to GitHub Pages

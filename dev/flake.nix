@@ -183,24 +183,11 @@
         };
 
         packages = {
-          search = search.packages.${system}.mkMultiSearch {
-            baseHref = "/nix-themes/";
+          search = search.packages.${system}.mkSearch {
+            baseHref = "/";
             title = "nix-themes Options Search";
-            scopes = [
-              {
-                modules = [ catppuccin.homeModules.default ];
-                name = "Home Manager";
-                overrideEvalModulesArgs = {
-                  class = "homeManager";
-                };
-                urlPrefix = "https://github.com/aniviaflome/nix-themes/blob/main/";
-              }
-              {
-                modules = [ catppuccin.nixosModules.default ];
-                name = "NixOS";
-                urlPrefix = "https://github.com/aniviaflome/nix-themes/blob/main/";
-              }
-            ];
+            optionsJSON = mkThemesOptionsDoc.optionsJSON + /share/doc/nixos/options.json;
+            urlPrefix = "https://github.com/aniviaflome/nix-themes/blob/main/";
           };
           themesOptionsJSON = mkThemesOptionsDoc.optionsJSON;
           themesOptionsMD = mkThemesOptionsDoc.optionsCommonMark;
