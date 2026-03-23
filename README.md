@@ -1,6 +1,6 @@
 # nix-themes
 
-Vibe coded experimental fork of [catppuccin/nix]([LICENSE](https://github.com/catppuccin/nix) that supports more color palettes.
+Vibe coded experimental fork of [catppuccin/nix](https://github.com/catppuccin/nix) that supports more color palettes.
 
 Supports **10 color schemes** with multiple variants each:
 
