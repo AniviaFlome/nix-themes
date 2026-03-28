@@ -52,7 +52,6 @@
   ./television.nix
   ./tmux.nix
   ./tofi.nix
-  ./vscode.nix
   ./waybar.nix
   ./wezterm.nix
   ./wleave.nix
@@ -61,21 +60,7 @@
   ./yazi.nix
   ./zathura.nix
   ./zed-editor.nix
-  ./zsh-syntax-highlighting.nix
-  ./anki.nix
-  ./chrome.nix
-  ./cursors.nix
-  ./freetube.nix
-  ./gemini-cli.nix
-  ./gtk.nix
-  ./neovim.nix
-  ./obs.nix
-  ./opencode.nix
-  ./qt5ct.nix
-  ./thunderbird.nix
-  ./vesktop.nix
-  ./vicinae.nix
-  ./vivid.nix
   ./zellij.nix
+  ./zsh-syntax-highlighting.nix
 ]
 # keep-sorted end

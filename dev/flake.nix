@@ -180,6 +180,49 @@
         checks = themesEvalChecks // {
           # Backwards-compat alias
           themes-eval = themesEvalChecks."themes-eval-catppuccin-mocha";
+
+          # Format check: fails if any file would be reformatted by nix fmt
+          fmt =
+            pkgs.runCommand "fmt-check"
+              {
+                src = catppuccin;
+                nativeBuildInputs = [ catppuccin.formatter.${system} ];
+              }
+              ''
+                cp -r $src src
+                chmod -R u+w src
+                cd src
+                treefmt --no-cache --fail-on-change
+                touch $out
+              '';
+
+          # Dead code check: fails if any Nix file has unused bindings
+          deadnix =
+            pkgs.runCommand "deadnix"
+              {
+                src = catppuccin;
+                nativeBuildInputs = [ pkgs.deadnix ];
+              }
+              ''
+                deadnix --fail $src
+                touch $out
+              '';
+
+          # Static analysis check
+          statix =
+            pkgs.runCommand "statix"
+              {
+                src = catppuccin;
+                nativeBuildInputs = [ pkgs.statix ];
+              }
+              ''
+                cd $src
+                statix check
+                touch $out
+              '';
+
+          # Ensure options documentation builds
+          options-doc = mkThemesOptionsDoc.optionsCommonMark;
         };
 
         packages = {

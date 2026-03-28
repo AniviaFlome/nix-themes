@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
   inherit (pkgs.stdenv.hostPlatform) isLinux;
@@ -8,7 +8,10 @@ in
   xdg.enable = true;
   xfconf.enable = isLinux;
   gtk.enable = isLinux;
-  qt.enable = isLinux;
+  qt = {
+    enable = isLinux;
+    style.name = lib.mkIf isLinux "kvantum";
+  };
 
   themes = {
     enable = true;
@@ -21,27 +24,23 @@ in
     # keep-sorted start block=yes sticky_comments=yes
     aerc.enable = true;
     alacritty.enable = true;
-    anki.enable = true;
     atuin.enable = true;
     bat.enable = true;
     bottom.enable = true;
-    brave.enable = isLinux;
     broot.enable = true;
     btop.enable = true;
     cava.enable = isLinux;
-    chromium.enable = isLinux;
     delta = {
       enable = true;
       enableGitIntegration = true;
     };
     element-desktop.enable = true;
     eza.enable = true;
+    firefox.enable = isLinux;
     fish.enable = true;
     foot.enable = isLinux;
-    freetube.enable = isLinux;
     fuzzel.enable = isLinux;
     fzf.enable = true;
-    gemini-cli.enable = true;
     gh-dash.enable = true;
     ghostty.enable = isLinux;
     gitui.enable = true;
@@ -56,11 +55,8 @@ in
     mangohud.enable = isLinux;
     micro.enable = true;
     mpv.enable = true;
-    neovim.enable = true;
     newsboat.enable = true;
     nushell.enable = true;
-    obs-studio.enable = isLinux;
-    opencode.enable = isLinux;
     qutebrowser.enable = false; # broken package due to python3.13-lxml-html-clean-0.4.2
     rio.enable = true;
     rofi.enable = isLinux;
@@ -70,13 +66,8 @@ in
     starship.enable = true;
     swaylock.enable = isLinux;
     television.enable = true;
-    thunderbird.enable = true;
     tmux.enable = true;
     tofi.enable = isLinux;
-    vesktop.enable = isLinux;
-    vicinae.enable = isLinux;
-    vivaldi.enable = isLinux;
-    vivid.enable = true;
     waybar.enable = isLinux;
     wezterm.enable = true;
     wleave.enable = isLinux;
@@ -84,6 +75,7 @@ in
     yazi.enable = true;
     zathura.enable = true;
     zed-editor.enable = true;
+    zellij.enable = true;
     zsh = {
       enable = true;
       syntaxHighlighting.enable = true;
