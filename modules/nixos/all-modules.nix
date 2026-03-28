@@ -7,5 +7,9 @@
   ./plymouth.nix
   ./sddm.nix
   ./tty.nix
+  ./fcitx5.nix
+  ./gitea.nix
+  ./gtk.nix
+  ./limine.nix
 ]
 # keep-sorted end

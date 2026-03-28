@@ -8,9 +8,13 @@
 
 let
   cfg = config.themes.zed-editor;
+  theme = config.themes.theme;
   p = config.themes.palette;
   accent = cfg.accent;
   enable = cfg.enable && config.programs.zed-editor.enable;
+
+  # catppuccin/zed uses surface1/surface2 for terminal black/bright-black (not ansi.black.normal/bright)
+  isCatppuccin = theme == "catppuccin";
 
   themeName = "nix-themes-${config.themes.theme}-${config.themes.variant}";
 
@@ -98,8 +102,8 @@ let
           "terminal.foreground" = p.text.hex;
           "terminal.bright_foreground" = p.text.hex;
           "terminal.dim_foreground" = p.subtext0.hex;
-          "terminal.ansi.black" = p.ansi.black.normal.hex;
-          "terminal.ansi.bright_black" = p.ansi.black.bright.hex;
+          "terminal.ansi.black" = if isCatppuccin then p.surface1.hex else p.ansi.black.normal.hex;
+          "terminal.ansi.bright_black" = if isCatppuccin then p.surface2.hex else p.ansi.black.bright.hex;
           "terminal.ansi.red" = p.ansi.red.normal.hex;
           "terminal.ansi.bright_red" = p.ansi.red.bright.hex;
           "terminal.ansi.green" = p.ansi.green.normal.hex;

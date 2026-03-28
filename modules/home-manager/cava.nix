@@ -3,40 +3,41 @@
 
 let
   cfg = config.themes.cava;
+  theme = config.themes.theme;
   p = config.themes.palette;
   enable = cfg.enable && config.programs.cava.enable;
-
-  # cava gradient: colors go from index 1 (quiet) to 8 (loud)
-  # We use a progression from teal to mauve to red
-  gradient = [
-    p.teal.hex
-    p.sky.hex
-    p.blue.hex
-    p.sapphire.hex
-    p.mauve.hex
-    p.pink.hex
-    p.peach.hex
-    p.red.hex
-  ];
 in
 
 {
   options.themes.cava = themesLib.mkThemeOption { name = "cava"; };
 
-  config = lib.mkIf enable {
+  config = lib.mkIf enable (
+    lib.mkMerge [
+      {
+        # cava gradient: colors go from index 1 (quiet) to 8 (loud)
+        programs.cava.settings.color = {
+          background = p.base.hex;
+          foreground = p.text.hex;
+          gradient = 1;
+          gradient_color_1 = p.teal.hex;
+          gradient_color_2 = p.sky.hex;
+          gradient_color_3 = lib.mkDefault p.blue.hex;
+          gradient_color_4 = lib.mkDefault p.sapphire.hex;
+          gradient_color_5 = p.mauve.hex;
+          gradient_color_6 = p.pink.hex;
+          gradient_color_7 = lib.mkDefault p.peach.hex;
+          gradient_color_8 = p.red.hex;
+        };
+      }
 
-    programs.cava.settings.color = {
-      background = p.base.hex;
-      foreground = p.text.hex;
-      gradient = 1;
-      gradient_color_1 = builtins.elemAt gradient 0;
-      gradient_color_2 = builtins.elemAt gradient 1;
-      gradient_color_3 = builtins.elemAt gradient 2;
-      gradient_color_4 = builtins.elemAt gradient 3;
-      gradient_color_5 = builtins.elemAt gradient 4;
-      gradient_color_6 = builtins.elemAt gradient 5;
-      gradient_color_7 = builtins.elemAt gradient 6;
-      gradient_color_8 = builtins.elemAt gradient 7;
-    };
-  };
+      # catppuccin/cava swaps sapphire/blue (pos 3/4) and uses maroon at pos 7
+      (lib.mkIf (theme == "catppuccin") {
+        programs.cava.settings.color = {
+          gradient_color_3 = p.sapphire.hex;
+          gradient_color_4 = p.blue.hex;
+          gradient_color_7 = p.maroon.hex;
+        };
+      })
+    ]
+  );
 }

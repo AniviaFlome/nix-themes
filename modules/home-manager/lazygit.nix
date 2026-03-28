@@ -8,6 +8,7 @@
 
 let
   cfg = config.themes.lazygit;
+  theme = config.themes.theme;
   p = config.themes.palette;
   enable = cfg.enable && config.programs.lazygit.enable;
   accent = cfg.accent;
@@ -22,32 +23,59 @@ let
       "${config.home.homeDirectory}/Library/Application Support";
   userConfigFile = "${configDirectory}/lazygit/config.yml";
 
-  themeFile = pkgs.writeText "nix-themes-lazygit.yml" ''
-    # nix-themes: ${config.themes.theme}/${config.themes.variant}
-    gui:
-      theme:
-        activeBorderColor:
-          - '${accentColor}'
-          - bold
-        inactiveBorderColor:
-          - '${p.overlay0.hex}'
-        optionsTextColor:
-          - '${p.blue.hex}'
-        selectedLineBgColor:
-          - '${p.surface1.hex}'
-        selectedRangeBgColor:
-          - '${p.surface1.hex}'
-        cherryPickedCommitBgColor:
-          - '${p.teal.hex}'
-        cherryPickedCommitFgColor:
-          - '${accentColor}'
-        unstagedChangesColor:
-          - '${p.red.hex}'
-        defaultFgColor:
-          - '${p.text.hex}'
-      authorColors:
-        '*': '${p.mauve.hex}'
-  '';
+  # catppuccin/lazygit uses different colors for several fields
+  mkThemeYaml =
+    {
+      inactiveBorderColor,
+      selectedBgColor,
+      cherryPickedBgColor,
+      authorColor,
+      extraLines ? "",
+    }:
+    ''
+      # nix-themes: ${config.themes.theme}/${config.themes.variant}
+      gui:
+        theme:
+          activeBorderColor:
+            - '${accentColor}'
+            - bold
+          inactiveBorderColor:
+            - '${inactiveBorderColor}'
+          optionsTextColor:
+            - '${p.blue.hex}'
+          selectedLineBgColor:
+            - '${selectedBgColor}'
+          selectedRangeBgColor:
+            - '${selectedBgColor}'
+          cherryPickedCommitBgColor:
+            - '${cherryPickedBgColor}'
+          cherryPickedCommitFgColor:
+            - '${accentColor}'
+          unstagedChangesColor:
+            - '${p.red.hex}'
+          defaultFgColor:
+            - '${p.text.hex}'${extraLines}
+        authorColors:
+          '*': '${authorColor}'
+    '';
+
+  themeFile = pkgs.writeText "nix-themes-lazygit.yml" (
+    if theme == "catppuccin" then
+      mkThemeYaml {
+        inactiveBorderColor = p.subtext0.hex;
+        selectedBgColor = p.surface0.hex;
+        cherryPickedBgColor = p.surface1.hex;
+        authorColor = p.lavender.hex;
+        extraLines = "\n    searchingActiveBorderColor:\n      - '${p.yellow.hex}'";
+      }
+    else
+      mkThemeYaml {
+        inactiveBorderColor = p.overlay0.hex;
+        selectedBgColor = p.surface1.hex;
+        cherryPickedBgColor = p.teal.hex;
+        authorColor = p.mauve.hex;
+      }
+  );
 in
 
 {

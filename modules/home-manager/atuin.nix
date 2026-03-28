@@ -3,9 +3,10 @@
 
 let
   cfg = config.themes.atuin;
+  theme = config.themes.theme;
   p = config.themes.palette;
   accent = cfg.accent;
-  themeName = "nix-themes-${config.themes.theme}-${config.themes.variant}-${accent}";
+  themeName = "nix-themes-${theme}-${config.themes.variant}-${accent}";
   enable = cfg.enable && config.programs.atuin.enable;
 in
 
@@ -29,7 +30,7 @@ in
       AlertError = "${p.red.hex}"
       Annotation = "${p.${accent}.hex}"
       Base = "${p.text.hex}"
-      Guidance = "${p.overlay1.hex}"
+      Guidance = "${if theme == "catppuccin" then p.overlay2.hex else p.overlay1.hex}"
       Important = "${p.red.hex}"
       Title = "${p.${accent}.hex}"
     '';
